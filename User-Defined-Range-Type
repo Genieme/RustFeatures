@@ -1,0 +1,48 @@
+
+User Defined Range Type : 
+ to replace clamp functions : 
+ let the type system help us.
+ 
+Instead of using a clamp or an `if 1<x and x<9 {}`.
+Let us define a new range type 
+- use as parameter type or return type, also for assignment.
+- type oneToNine = (1..9, 2); 
+- type oneToNine for (1..9, 2); 
+- inclusive syntax : (1...9, 2) is also allowed.
+- oneToNine is a user-defined range type 
+- from the range constructor or syntax builder.
+- value range : from 1 to 9 exclusive, in step 2
+  - possible valid values : 1, 3, 5, 7 only
+  - any other values would cause an error : 
+    type boundary violation or invalid value.
+  - Is this a compile time type-check?
+  - let the type system do the work, YES.
+  - No More Clamp Fn, YES.
+- fn getme6(val: oneToNine) -> i32; // error, no 6 in range.
+- fn getme7(val: oneToNine) -> i32; // yes i am in range.
+
+- How to express i32, i64, i16, u32, etc of range values. 
+- what is the range value type?
+- New syntax : type oneToNine = (1..9, 2) for u64;
+
+Alternative : 
+- New syntax : type oneToNine = (1..9, 2) with u64;
+- New syntax : type oneToNine = (1..9, 2) of u32;
+- New syntax : type oneToNine = (1..9, 2) where u128;
+
+REAL WORLD USAGE : 
+github.com/netvl/xml-rs/src/common.rs
+
+// a range type is more effective instead of u8 to u64
+// count: u64 is the final item, why not as param. 
+// to prevent a large number from being passed into the fn. 
+  pub fn advance(&mut self, count: u8) { 
+    self.column = self.column + count as u64; 
+  }
+  
+  // here again, a shortcut to u64.
+  pub fn advance_to_tab(&mut self, width: u8) -> () { 
+    let width = width as u64;
+    self.column = self.column + width - self.column % width
+  }
+  
